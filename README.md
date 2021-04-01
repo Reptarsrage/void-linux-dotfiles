@@ -44,9 +44,14 @@ fc-cache -fv
 cp -r ./config/* ~/.config/
 cp ./.bashrc ~/.bashrc
 cp ./.Xresources ~/.Xresources
+cp ./lightdm-mini-greeter.conf /etc/lightdm/lightdm-mini-greeter.conf
+cp ./run.bspwm /usr/share/run.bspwm
 chmod +x ~/.conf/bspwm/bspwmrc
 chmod +x ~/.conf/polybar/launch.sh
+chmod +x ~/usr/share/run.bspwm
 ```
+
+> **NOTE**: Edit `/usr/share/xsessions/bspwm.desktop` and set `Exec=/usr/share/run.bspwm`
 
 ## Install terminal
 

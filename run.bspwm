@@ -1,0 +1,19 @@
+#!/bin/sh
+
+## Compositor
+picom &
+
+## Wallpaper
+feh --bg-fill ~/Pictures/wallpaper/gruv.png
+
+## Theme
+xrdb merge ~/.Xresources &
+
+## Keyboard
+setxkbmap -layout us &
+
+## Screensaver
+xscreensaver -no-splash &
+
+bspwm
+
