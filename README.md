@@ -83,3 +83,12 @@ install -Dm755 ./xbps-updates/xbps-updates /usr/local/bin/xbps-updates
 sudo ln -s /etc/sv/dbus /var/service/dbus
 sudo ln -s /etc/sv/lightdm /var/service/lightdm
 ```
+
+## Changing theme
+
+```sh
+git clone https://github.com/base16-templates/base16-xresources.git
+cd base16-xresources/xresources
+use <Pick One>.Xresources && load
+```
+
