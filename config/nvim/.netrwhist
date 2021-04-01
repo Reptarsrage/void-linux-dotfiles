@@ -1,0 +1,5 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =3
+let g:netrw_dirhist_3='/home/void/.config/sxhkd'
+let g:netrw_dirhist_2='/home/void/.config/picom/picom.conf'
+let g:netrw_dirhist_1='/home/void'
