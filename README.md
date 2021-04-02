@@ -77,6 +77,30 @@ git clone https://github.com/siduck76/xbps-updates.git
 install -Dm755 ./xbps-updates/xbps-updates /usr/local/bin/xbps-updates
 ```
 
+## Install Neovim nightly
+
+```sh
+git clone https://github.com/neovim/neovim.git
+cd neovim
+xbps-install -S base-devel cmake unzip ninja tree-sitter
+make
+sudo make install
+```
+
+## Install Packer and neovim plugins
+
+```sh
+git clone https://github.com/wbthomason/packer.nvim\
+ ~/.local/share/nvim/site/pack/packer/start/packer.nvim
+```
+
+Then, open up nvim and run:
+
+```sh
+:PackerInstall
+:TSInstall
+```
+
 ## Add startup services (no going back after this!)
 
 ```sh
