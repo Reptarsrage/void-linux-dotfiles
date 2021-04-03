@@ -1,119 +1,70 @@
+-- neovim package manager configuration
+-- see: https://github.com/wbthomason/packer.nvim#readme
+-- This file can be loaded by calling `lua require('plugins')` from your init.vim
+
 return require('packer').startup(function()
   -- Packer can manage itself
   use 'wbthomason/packer.nvim'
-  
+
   -- Themes
-  use 'chriskempson/base16-vim'
-  
-  -- Color highlights
+  use 'sainnhe/edge'
+
+  -- LSP
+  use 'neovim/nvim-lspconfig'
+  use 'omnisharp/omnisharp-vim'
+  use 'nvim-lua/completion-nvim'
+
+  -- Snippets
+  use 'SirVer/ultisnips'
+  use 'honza/vim-snippets'
+
+  -- Fuzzy find
   use {
-    'norcalli/nvim-colorizer.lua',
-    config = function()
-      require('colorizer').setup()
-    end
+    'nvim-telescope/telescope.nvim',
+    requires = { 'nvim-lua/popup.nvim', 'nvim-lua/plenary.nvim' }
   }
 
-  -- File Explorer
-  use {
-    'kyazdani42/nvim-tree.lua',
-    requires = {
-      'kyazdani42/nvim-web-devicons'
-    },
-    config = function()
-      require('nvim-tree-config')
-    end
-  }
+  -- Editorconfig
+  use 'editorconfig/editorconfig-vim'
 
-  -- Git decoration
-  use {
-    'lewis6991/gitsigns.nvim',
-    requires = {
-      'nvim-lua/plenary.nvim'
-    },
-    config = function()
-      require('gitsigns').setup()
-    end
-  }
-
-  -- Status line
-  use {
-    'glepnir/galaxyline.nvim',
-    branch = 'main',
-    config = function()
-      require('statusline')
-    end,
-    requires = {
-      'kyazdani42/nvim-web-devicons'
-    }
-  }
-
-  -- Nested syntax highlighting
+  -- Syntax highliting (better)
   use {
     'nvim-treesitter/nvim-treesitter',
+    run = ':TSUpdate',
     config = function()
-      require('nvim-treesitter.configs').setup {
-        ensure_installed = "maintained",
-	ignore_install = { },
-	highlight = {
-          enable = true,
-	  disable = { },
+      require'nvim-treesitter.install'.compilers = { "clang" }; -- needed for windows!
+      require'nvim-treesitter.configs'.setup {
+        ensure_installed = { 'c_sharp', 'javascript' }, -- install additional with TSInstall
+        highlight = {
+          enable = true
         }
-      }
+      };
     end
   }
 
-  -- Autocomplete
+  -- File explorer
   use {
-    'hrsh7th/nvim-compe',
-    config = function()
-      require('compe').setup {
-        enabled = true;
-        autocomplete = true;
-        debug = false;
-        min_length = 1;
-        preselect = 'enable';
-        throttle_time = 80;
-        source_timeout = 200;
-        incomplete_delay = 400;
-        max_abbr_width = 100;
-        max_kind_width = 100;
-        max_menu_width = 100;
-        documentation = true;
-        source = {
-          path = true;
-          buffer = true;
-          calc = true;
-          nvim_lsp = true;
-          nvim_lua = true;
-          vsnip = true;
-        };
-      }
-    end
+    'kyazdani42/nvim-tree.lua',
+    requires = { 'kyazdani42/nvim-web-devicons' }
   }
-  
-  -- Auto close pairs and html tags
-  use 'windwp/nvim-autopairs'
+
+  -- status Line
   use {
-    'alvan/vim-closetag',
+   'glepnir/galaxyline.nvim',
+    config = function() require'eviline' end,
+    requires = { 'kyazdani42/nvim-web-devicons' }
+  }
+
+  -- Debugger
+  use 'mfussenegger/nvim-dap'
+  use {
+    'nvim-telescope/telescope-dap.nvim',
+    requires = { 'nvim-telescope/telescope.nvim' },
     config = function()
-      require('closetag-config')
+      require('telescope').load_extension('dap');
+      require('dap-omnisharp').setup('D:/Downloads/Extracted/netcoredbg/netcoredbg.exe', { include_configs = true });
     end
   }
 
-  -- Pop-ups
-  use {
-    'nvim-lua/popup.nvim',
-    requires = {
-      'nvim-lua/plenary.nvim'
-    }
-  }
-
-  -- Language server configs
-  use 'onsails/lspkind-nvim'
-  use {
-    'neovim/nvim-lspconfig',
-    config = function()
-      require('lspconfig').gopls.setup{}
-    end
-  }
+  use_rocks 'luafilesystem'
 end)
