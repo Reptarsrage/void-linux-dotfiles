@@ -13,6 +13,7 @@ local wo = vim.wo
 local g = vim.g
 local cmd = vim.cmd
 local api = vim.api
+local fn = vim.fn
 
 -- set leader
 g.mapleader = ' '
@@ -29,7 +30,7 @@ cmd 'filetype plugin indent on'
 -- initialize Omnisharp
 -- see: https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#omnisharp
 local lspconfig = require('lspconfig')
-local pid = vim.fn.getpid()
+local pid = fn.getpid()
 local omnisharp_bin = 'C:/ProgramData/chocolatey/bin/OmniSharp.exe'
 local capabilities = vim.lsp.protocol.make_client_capabilities();
 capabilities.textDocument.completion.completionItem.snippetSupport = true
@@ -42,117 +43,53 @@ lspconfig.omnisharp.setup{
 
 local opts = { noremap=true, silent=true }
 
--- Find files using Telescope command-line sugar
+-- find files using Telescope command-line sugar
 api.nvim_set_keymap('n', '<leader>ff', '<cmd>Telescope find_files<CR>', opts)
 api.nvim_set_keymap('n', '<leader>fg', '<cmd>Telescope live_grep<CR>', opts)
 api.nvim_set_keymap('n', '<leader>fb', '<cmd>Telescope buffers<CR>', opts)
 api.nvim_set_keymap('n', '<leader>fh', '<cmd>Telescope help_tags<CR>', opts)
 api.nvim_set_keymap('n', '<leader>fl', '<cmd>Telescope git_files<CR>', opts)
 
--- File tree mappings
+-- file tree mappings
 api.nvim_set_keymap('n', '<leader>tt', '<cmd>NvimTreeToggle<CR>', opts)
 api.nvim_set_keymap('n', '<leader>tr', '<cmd>NvimTreeRefresh<CR>', opts)
 api.nvim_set_keymap('n', '<leader>tn', '<cmd>NvimTreeFindFile<CR>', opts)
 
--- Debugger mappings
+-- debugger mappings
 api.nvim_set_keymap('n', '<F5>', "<cmd>lua require'dap'.continue()<CR>", opts)
 api.nvim_set_keymap('n', '<leader>dd', "<cmd>lua require'dap'.continue()<CR>", opts)
 api.nvim_set_keymap('n', '<F10>', "<cmd>lua require'dap'.step_over()<CR>", opts)
 api.nvim_set_keymap('n', '<F11>', "<cmd>lua require'dap'.step_into()<CR>", opts)
-api.nvim_set_keymap('n', '<F12>', "<cmd>lua require'dap'.step_out()<CR>", opts)
-api.nvim_set_keymap('n', '<leader>b', "<cmd>lua require'dap'.toggle_breakpoint()<CR>", opts)
-api.nvim_set_keymap('n', '<leader>B', "<cmd>lua require'dap'.set_breakpoint(vim.fn.input('Breakpoint condition: '))<CR>", opts)
-api.nvim_set_keymap('n', '<leader>lp', "<cmd>lua require'dap'.set_breakpoint(nil, nil, vim.fn.input('Log point message: '))<CR>", opts)
-api.nvim_set_keymap('n', '<leader>dr', "<cmd>lua require'dap'.repl.open()<CR>", opts)
-api.nvim_set_keymap('n', '<leader>dl', "<cmd>lua require'dap'.repl.run_last()<CR>", opts)
-api.nvim_set_keymap('n', '<leader>dn', "<cmd>lua require'dap'.step_out()<CR>", opts)
-api.nvim_set_keymap('n', '<leader>ds', "<cmd>lua require'dap'.step_out()<CR>", opts)
+api.nvim_set_keymap('n', '<S-F11>', "<cmd>lua require'dap'.step_out()<CR>", opts)
+api.nvim_set_keymap('n', '<C-S-F5>', "<cmd>lua require'dap'.restart()<CR>", opts)
+api.nvim_set_keymap('n', '<S-F5>', "<cmd>lua require'dap'.disconnect()<CR>", opts)
+api.nvim_set_keymap('n', '<S-F9>', "<cmd>lua require'dap'.toggle_breakpoint()<CR>", opts)
+-- TODO: add non fn-button related shortcuts
+
+-- debugger options
+require('dap')
+fn.sign_define('DapBreakpoint', {text='B', texthl='', linehl='', numhl=''})
+fn.sign_define('DapLogPoint', {text='L', texthl='', linehl='', numhl=''})
+fn.sign_define('DapStopped', {text='→', texthl='', linehl='debugPC', numhl=''})
+
+-- enable loading of vscode launch.json settings files
+require('dap.ext.vscode').load_launchjs()
+
+-- debugger telescope integration
 api.nvim_set_keymap('n', '<leader>dc', "<cmd>lua require'telescope'.extensions.dap.commands{}<CR>", opts)
 api.nvim_set_keymap('n', '<leader>dC', "<cmd>lua require'telescope'.extensions.dap.configurations{}<CR>", opts)
 api.nvim_set_keymap('n', '<leader>db', "<cmd>lua require'telescope'.extensions.dap.list_breakpoints{}<CR>", opts)
 api.nvim_set_keymap('n', '<leader>dv', "<cmd>lua require'telescope'.extensions.dap.variables{}<CR>", opts)
 
 -- nvim-tree options
-g.nvim_tree_side = 'right' 
-g.nvim_tree_ignore = { '.git', 'node_modules', '.cache' } 
-g.nvim_tree_gitignore = 1 
-g.nvim_tree_auto_open = 1 
-g.nvim_tree_auto_close = 1 
-g.nvim_tree_quit_on_open = 1 
-g.nvim_tree_follow = 1 
-g.nvim_tree_indent_markers = 1 
-g.nvim_tree_hide_dotfiles = 1 
-g.nvim_tree_git_hl = 1 
-g.nvim_tree_root_folder_modifier = ':~' 
-g.nvim_tree_tab_open = 1 
-g.nvim_tree_width_allow_resize  = 1 
-g.nvim_tree_disable_netrw = 0 
-g.nvim_tree_hijack_netrw = 0 
-g.nvim_tree_add_trailing = 1 
-g.nvim_tree_group_empty = 1 
-g.nvim_tree_show_icons = { 
-  git = 1, 
-  folders = 1, 
-  files = 1 
+g.nvim_tree_side = 'right'
+g.nvim_tree_gitignore = 1
+g.nvim_tree_hide_dotfiles = 0
+g.nvim_tree_show_icons = {
+  git = 1,
+  folders = 1,
+  files = 1
 }
-
--- nvim-tree icons
-g.nvim_tree_icons = {
-  default = '',
-  symlink = '',
-  git = {
-    unstaged = "✗",
-    staged = "✓",
-    unmerged = "",
-    renamed = "➜",
-    untracked = "★",
-    deleted = ""
-  },
-  folder = {
-    default = "",
-    open = "",
-    empty = "",
-    empty_open = "",
-    symlink = "",
-    symlink_open = ""
-   }
-}
-
--- TODO: Remove this
-function GetFileExtension(path)
-    return path:match("^.+(%..+)$")
-end
-
-function dirtree(dir)
-    local lfs = require('lfs')
-    
-    assert(dir and dir ~= '', 'Please pass directory parameter')
-    if string.sub(dir, -1) == '/' then
-        dir=string.sub(dir, 1, -2)
-    end
-
-    local function yieldtree(dir)
-        for entry in lfs.dir(dir) do
-            if entry ~= '.' and entry ~= '..' then
-                entry=dir..'/'..entry
-                local attr=lfs.attributes(entry)
-                coroutine.yield(entry,attr)
-                if attr.mode == 'directory' then
-                    yieldtree(entry)
-                end
-            end
-        end
-    end
-
-    return coroutine.wrap(function() yieldtree(dir) end)
-end
-
-function mytest()
-  for filename, attr in dirtree("C:/Users/jrobb/Source/temp/MondecaShim") do
-    print(attr.mode, filename)
-  end 
-end
-api.nvim_set_keymap('n', '<leader>te', '<cmd>lua mytest()<CR>', opts)
 
 -- a collection of settings from throught the years
 o.termguicolors  = true -- truecolours for better experience

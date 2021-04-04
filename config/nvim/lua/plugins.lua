@@ -50,7 +50,7 @@ return require('packer').startup(function()
 
   -- status Line
   use {
-   'glepnir/galaxyline.nvim',
+   'Reptarsrage/galaxyline.nvim',
     config = function() require'eviline' end,
     requires = { 'kyazdani42/nvim-web-devicons' }
   }
@@ -65,6 +65,4 @@ return require('packer').startup(function()
       require('dap-omnisharp').setup('D:/Downloads/Extracted/netcoredbg/netcoredbg.exe', { include_configs = true });
     end
   }
-
-  use_rocks 'luafilesystem'
 end)

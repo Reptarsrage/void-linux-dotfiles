@@ -1,6 +1,7 @@
 local gl = require('galaxyline')
 local colors = require('galaxyline.theme').default
 local condition = require('galaxyline.condition')
+local omni = require'dap-omnisharp'
 local gls = gl.section
 gl.short_line_list = {'NvimTree','vista','dbui','packer'}
 
@@ -124,7 +125,70 @@ gls.mid[1] = {
   }
 }
 
+local function is_debugging()
+  local dap = require('dap')
+  local session = dap.session()
+  return session ~= nil
+end
+
+local function supports_debugging()
+  local dap = require('dap')
+  local adapters = dap.adapters
+  local ext = vim.fn.expand('%:e')
+  ext = (ext == 'py' and 'python') or ext
+  return adapters ~= nil and adapters[ext] ~= nil
+end
+
 gls.right[1] = {
+  StartDebugger = {
+    provider = function()
+      if supports_debugging() and not is_debugging() then
+        return ' F5 Debug'
+      end
+    end,
+    separator = ' ',
+    separator_highlight = {'NONE',colors.bg},
+    highlight = {colors.green,colors.bg,'bold'},
+  }
+}
+
+gls.right[2] = {
+  Debugging = {
+    provider = function()
+      local db = is_debugging()
+      if db then
+        if omni.exiting then
+          return ' Exiting'
+        elseif omni.stopped then
+          return ' Paused'
+        elseif omni.initialized then
+          return ' Debugging'
+        elseif omni.exited then
+          return '栗 Stopped'
+        else
+          return '痢 Initializing'
+        end
+      end
+    end,
+    separator = ' ',
+    separator_highlight = {'NONE',colors.bg},
+    highlight = function()
+      if omni.exiting then
+        return {colors.violet,colors.bg,'bold'}
+      elseif omni.stopped then
+        return {colors.yellow,colors.bg,'bold'}
+      elseif omni.initialized then
+        return {colors.orange,colors.bg,'bold'}
+      elseif omni.exited then
+        return {colors.red,colors.bg,'bold'}
+      else
+        return {colors.cyan,colors.bg,'bold'}
+      end
+    end,
+  }
+}
+
+gls.right[3] = {
   FileEncode = {
     provider = 'FileEncode',
     condition = condition.hide_in_width,
@@ -134,7 +198,7 @@ gls.right[1] = {
   }
 }
 
-gls.right[2] = {
+gls.right[4] = {
   FileFormat = {
     provider = 'FileFormat',
     condition = condition.hide_in_width,
@@ -144,7 +208,7 @@ gls.right[2] = {
   }
 }
 
-gls.right[3] = {
+gls.right[5] = {
   GitIcon = {
     provider = function() return '  ' end,
     condition = condition.check_git_workspace,
@@ -154,7 +218,7 @@ gls.right[3] = {
   }
 }
 
-gls.right[4] = {
+gls.right[6] = {
   GitBranch = {
     provider = 'GitBranch',
     condition = condition.check_git_workspace,
@@ -162,7 +226,7 @@ gls.right[4] = {
   }
 }
 
-gls.right[5] = {
+gls.right[7] = {
   DiffAdd = {
     provider = 'DiffAdd',
     condition = condition.hide_in_width,
@@ -171,7 +235,7 @@ gls.right[5] = {
   }
 }
 
-gls.right[6] = {
+gls.right[8] = {
   DiffModified = {
     provider = 'DiffModified',
     condition = condition.hide_in_width,
@@ -180,7 +244,7 @@ gls.right[6] = {
   }
 }
 
-gls.right[7] = {
+gls.right[9] = {
   DiffRemove = {
     provider = 'DiffRemove',
     condition = condition.hide_in_width,
@@ -189,7 +253,7 @@ gls.right[7] = {
   }
 }
 
-gls.right[8] = {
+gls.right[10] = {
   RainbowBlue = {
     provider = function() return '▊' end,
     separator = ' ',
