@@ -139,51 +139,35 @@ local function supports_debugging()
   return adapters ~= nil and adapters[ext] ~= nil
 end
 
-gls.right[1] = {
-  StartDebugger = {
-    provider = function()
-      if supports_debugging() and not is_debugging() then
-        return ' F5 Debug'
-      end
-    end,
-    separator = ' ',
-    separator_highlight = {'NONE',colors.bg},
-    highlight = {colors.green,colors.bg,'bold'},
-  }
-}
+local function get_debug_state()
+  if omni.exited then return 5 end
+  if omni.exiting then return 4 end
+  if omni.stopped then return 3 end
+  if omni.initialized then return 2 end
+  if not is_debugging() then return 0 end
+  return 1
+end
 
 gls.right[2] = {
   Debugging = {
     provider = function()
-      local db = is_debugging()
-      if db then
-        if omni.exiting then
-          return ' Exiting'
-        elseif omni.stopped then
-          return ' Paused'
-        elseif omni.initialized then
-          return ' Debugging'
-        elseif omni.exited then
-          return '栗 Stopped'
-        else
-          return '痢 Initializing'
-        end
-      end
+      local states = { 'F5 Debug', 'Initializing', 'Debugging', 'Paused', 'Exiting', 'Stopped', }
+      local highlight_colors = { colors.green, colors.blue, colors.red, colors.yellow, colors.red, colors.red, }
+      vim.api.nvim_command('highlight GalaxyDebugging guifg='..highlight_colors[get_debug_state() + 1])
+      return ' '..states[get_debug_state() + 1]
+    end,
+    icon = function()
+      local icons = { '', '痢', '', '', '', '栗', }
+      return icons[get_debug_state() + 1]
+    end,
+    condition = function ()
+      return supports_debugging()
     end,
     separator = ' ',
     separator_highlight = {'NONE',colors.bg},
     highlight = function()
-      if omni.exiting then
-        return {colors.violet,colors.bg,'bold'}
-      elseif omni.stopped then
-        return {colors.yellow,colors.bg,'bold'}
-      elseif omni.initialized then
-        return {colors.orange,colors.bg,'bold'}
-      elseif omni.exited then
-        return {colors.red,colors.bg,'bold'}
-      else
-        return {colors.cyan,colors.bg,'bold'}
-      end
+      local highlight_colors = { colors.green, colors.blue, colors.red, colors.yellow, colors.red, colors.red, }
+      return { highlight_colors[get_debug_state() + 1], colors.bg }
     end,
   }
 }

@@ -50,7 +50,7 @@ return require('packer').startup(function()
 
   -- status Line
   use {
-   'Reptarsrage/galaxyline.nvim',
+   'glepnir/galaxyline.nvim',
     config = function() require'eviline' end,
     requires = { 'kyazdani42/nvim-web-devicons' }
   }
